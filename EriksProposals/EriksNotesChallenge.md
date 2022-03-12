@@ -94,7 +94,9 @@ kW.
 
 A parameter that is usually calculated for gas turbine engines that 
 might be useful in your analysis is:
-• THRM_EFF: % of thermal efficiency      ![image-20220312041334068](C:\Users\Erik\Documents\BakerHcode\Team1-Visualization\EriksProposals\EriksNotesChallenge.assets\image-20220312041334068.png)
+• THRM_EFF: % of thermal efficiency     
+
+![image-20220312065447522](C:\Users\Erik\Documents\BakerHcode\Team1-Visualization\EriksProposals\EriksNotesChallenge.assets\image-20220312065447522.png)
 
 
 

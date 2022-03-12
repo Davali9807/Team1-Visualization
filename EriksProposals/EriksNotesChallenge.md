@@ -30,7 +30,7 @@ use other languages, you will be given 80% of the points.
 For this challenge, along with the presentation you must submit the developed product (report,
 dashboard, or a set of visualizations) in pdf format.
 
-## given
+## given data
 
 * synthetic dataset for the operation of gas turbine engines from different customers sites around the world.
 

@@ -103,7 +103,7 @@ might be useful in your analysis is:
 # Will be graded:
 
 Submit your computation of the operating hours estimation for engine 3 in the Ancient Wasp site from our Busy customer, as described in Data.
-• Metric
+• Metric to grade
 The evaluation metric for the estimation is the Root Mean Square Error (RMSE). As your submission approaches the solution, the Kaggle
 score is near to zero.
 • Submission Format

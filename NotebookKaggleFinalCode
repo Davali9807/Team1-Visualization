@@ -1,0 +1,115 @@
+# This Python 3 environment comes with many helpful analytics libraries installed
+# It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python
+# For example, here's several helpful packages to load
+#*************************************#
+#   Hackaton 2022 Data Visualization  #
+#                Team 1               #
+#            Operating Hours          #
+#*************************************#
+
+# Import neccesary libraries
+import pandas as pd
+import numpy as np
+
+# Data Entry
+df = pd.read_csv('../input/0db0ed38-868c-40d2-bcbd-bcedb88543cf/dataset/dataset/data_33.csv', sep=',', header=0)
+
+# Cleaning data
+df.rename(columns={df.columns[0]: 'Time'}, inplace = True)
+df['Time'] = pd.to_datetime(df['Time'], dayfirst=True) # Object to datetime
+df = df.replace(np.nan, 0)
+
+# Convert dates in hours
+def to_hours(date): 
+    return date.seconds//3600
+
+# Calculate Operating Hours
+acum = 0
+hours = []
+count= []
+for i in range (0, len(df.Time)): 
+    count.append(i) #ID
+    if df.CMP_SPEED[i]>0 and df.CMP_SPEED[i+1]>0:
+        acum =  acum + to_hours(df.Time[i+1]-df.Time[i])
+        hours.append(acum)
+    else:
+        hours.append(acum)
+
+list_tuples = list(zip(count, hours))  
+OperatingHours = pd.DataFrame(list_tuples, columns=['ID', 'HOURS'])
+OperatingHours.to_csv('Visualization_Team-1A.csv', index=False)
+OperatingHours
+
+#***********************************#
+#                                   #
+#           VISUALIZATION           #
+#                                   #
+#***********************************#
+#**Graph to summarize the plants around the globe categorized by customers**#
+#Necessary Libraries
+import plotly.express as px
+#Data Entry
+Plants = pd.read_csv("../input/0db0ed38-868c-40d2-bcbd-bcedb88543cf/site_metadata.csv")
+#Graph
+fig = px.scatter_geo(Plants, lat= "LATITUDE", lon = "LONGITUDE",  color="CUSTOMER_NAME",
+                     hover_name="PLANT_NAME",title = "Distribution of Gas Turbines by Clients",
+                     projection="natural earth")
+fig.show()
+
+#**Graph to show emissions of CO2 along the time**#
+#Data entry
+EMICO = pd.read_csv('../input/0db0ed38-868c-40d2-bcbd-bcedb88543cf/dataset/dataset/data_33.csv')
+# Cleaning and modifying data
+EMICO.rename(columns={EMICO.columns[0]: 'Date'}, inplace = True)
+EMICO['Date'] = pd.to_datetime(EMICO['Date'], dayfirst=True) # Object to datetime
+EMICO = EMICO.replace(np.nan, 0)
+   #cummulative sum of CO2 emmisions
+cummCO = []
+cummsum = 0
+for i in range (0, len(EMICO.CO2)):
+    if EMICO.CO2[i]>0:
+        cummsum = cummsum + (EMICO.CO2[i])
+        cummCO.append(cummsum)
+    else:
+        cummCO.append(cummsum)
+#Add new column with the cummulative sum of the emisions along the year to dataframe EMICO as new_EMICO
+new_EMICO=EMICO.assign(CumulativeEmissions =cummCO)
+
+#Graph CO2Emmissions
+fig = px.line(new_EMICO, x="Date", y="CumulativeEmissions", title= "CO2 Emissions")
+fig.show()
+
+#Operating Hours
+fig = px.line(OperatingHours, x="ID", y="HOURS", title= "Operating HOURS")
+fig.show()
+
+#Efficiency
+#FUEL_LHV Value for Ancient Wasp from Client BUSY
+FUEL_LHV = Plants.FUEL_LHV[7]
+print(FUEL_LHV)
+
+#Efficiency calculus for turbine3 at Ancient Wasp from BUSY
+THRM_EFF = []
+eff = 0
+for i in range (0, len(EMICO.FUEL_FLOW)):
+    if new_EMICO.FUEL_FLOW[i]>0:
+        eff = (100*(new_EMICO.POWER[i])/(new_EMICO.FUEL_FLOW[i]*FUEL_LHV))
+        THRM_EFF.append(eff)
+    else:
+        THRM_EFF.append(0)
+#Add new column with the computation of the efficiency for the turbine
+new2_EMICO=new_EMICO.assign(THRM_EFFICIENCY =THRM_EFF)
+
+#Graph THRM_EFFICIENCY
+fig = px.line(new2_EMICO, x="Date", y="THRM_EFFICIENCY", title= "Thermic Efficiency along the year")
+fig.show()
+
+#Compute de average efficiency
+Average_EFF = new2_EMICO["THRM_EFFICIENCY"].mean()
+print(Average_EFF)
+
+
+# You can write up to 20GB to the current directory (/kaggle/working/) that gets preserved as output when you create a version using "Save & Run All" 
+# You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session#**Graph to show emissions of CO2 along the time**#
+
+
